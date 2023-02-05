@@ -1,0 +1,99 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+node "CLM"{
+[CLM Policy Brian] as clm
+}
+
+node "Alfresco"{
+[Documents Repository] as docsRepo
+}
+
+node "One Span"{
+[Digital Signature] as digSign
+}
+
+node "Quadient"{
+[Quadient PDF Template] as pdf
+}
+skinparam databaseBackgroundColor #5F9EA0
+skinparam cloudBackgroundColor #E6E6FA
+
+cloud {
+    package Onboarding\nComponents {
+       [Entity] as entity
+       [Product] as product
+       [Document] as docs
+       [Agreement] as agreement
+       [Repository] as repo
+       [Digital Signature] as signs
+       [Rules Engine] as rules
+    }
+
+    database "CosmosDB" as cosmosdb {
+        folder "Entity" {
+         [Selected Entity or Entities - Persisted]
+        }
+        folder "Products" {
+         [Selected Product or Products - Persisted]
+        }
+    }
+}
+
+node "OKTA" as okta
+node "INTERNAL APIGEE" as intGateway
+
+node "MRD" {
+ [MRD] as mrd
+}
+
+'select persist Entity or Entities
+
+entity -up--> okta: OAuth Tokens - Entity
+entity <.. okta: Tokens
+entity --> intGateway: Get Entities
+intGateway -down--> mrd : Get List of Entities
+intGateway <.. mrd : Entities List
+entity <.. intGateway:  Entities List
+entity --> repo: CRUD Entity\n or Entities
+repo --> cosmosdb : Entity CRUD Action
+repo <.. cosmosdb: Entity CRUD Success
+entity <.. repo: CRUD Success
+
+'docs for entity or entities
+docs --> okta: OAuth Tokens - Document
+docs <.. okta: Tokens
+docs -> intGateway: Get required\n documents details
+intGateway -down--> clm: Get required\n docs details
+intGateway <.. clm: respond with\n docs details
+docs <.. intGateway: Documents Details
+docs --> intGateway: Upload Documents
+intGateway -down--> docsRepo: upload Documents
+intGateway <.. docsRepo: Upload Success
+docs <.. intGateway: Upload Success
+
+'Persist product(s)
+product --> repo: CRUD Product(s)
+repo --> cosmosdb: Product(s) CRUD Action
+repo <.. cosmosdb: Product(s) CRUD Success
+product <.. repo: CRUD Success
+
+'Agreement
+agreement --> rules: Get Rules\n for Selected Product(s)
+agreement --> okta: OAuth Tokens - Agreement
+agreement <.. okta: Tokens
+agreement --> intGateway: Get Agreement PDF Link
+agreement -down--> digSign: Get PDF URL
+digSign -down--> pdf: Get Rendered PDF
+digSign <.. pdf: success
+intGateway <.. digSign: Respond with PDF URL
+agreement <.. intGateway: PDF URL
+agreement -> repo: Update Product\n with Agreement Reference Keys
+repo --> cosmosdb: Update Product with Agreement Reference  Keys
+repo <.. cosmosdb: Success
+agreement <.. repo: Success
+
+
+
+
+@enduml
