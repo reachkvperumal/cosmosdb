@@ -84,6 +84,7 @@ agreement --> okta: OAuth Tokens - Agreement
 agreement <.. okta: Tokens
 agreement --> intGateway: Get Agreement PDF Link
 agreement -down--> digSign: Get PDF URL
+
 digSign -down--> pdf: Get Rendered PDF
 digSign <.. pdf: success
 intGateway <.. digSign: Respond with PDF URL
@@ -93,7 +94,11 @@ repo --> cosmosdb: Update Product with Agreement Reference  Keys
 repo <.. cosmosdb: Success
 agreement <.. repo: Success
 
-
+signs <-- digSign: Post back User activity\n for offline signature process
+signs --> repo: Update signature flow
+repo --> cosmosdb: Update product\n for signature capture
+repo <.. cosmosdb: Success
+signs <.. repo: Success
 
 
 @enduml
