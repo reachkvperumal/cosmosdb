@@ -36,6 +36,11 @@ public class CosmosMongoController {
         return repository.findById(id);
     }
 
+    @GetMapping("fname/{name}")
+    public Flux<UserDO> getUserByFirstName(@PathVariable("name") String name) {
+        return repository.findByFirstName(name);
+    }
+
     @PatchMapping("/update/{id}")
     public Mono<String> updateUserById(@PathVariable String id, @RequestBody UserDO user) {
         return repository.findById(id)

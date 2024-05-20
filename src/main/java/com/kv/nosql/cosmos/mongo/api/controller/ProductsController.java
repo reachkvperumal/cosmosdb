@@ -35,6 +35,11 @@ public class ProductsController {
         return repository.findById(id);
     }
 
+    @GetMapping("name/{name}")
+    public Flux<ProductsDO> getProductByName(@PathVariable("name") String name) {
+        return repository.findByProductName(name);
+    }
+
     @PatchMapping("/update/{id}")
     public Mono<String> updateUserById(@PathVariable String id, @RequestBody ProductsDO product) {
         return repository.findById(id)
