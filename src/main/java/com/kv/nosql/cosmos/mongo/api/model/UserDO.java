@@ -9,9 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Sharded;
 
-import java.util.Collection;
-
-@Document(collection="UserDetails")
+@Document(collection = "UserDetails")
 @Sharded(shardKey = "firstName")
 @Data
 @NoArgsConstructor

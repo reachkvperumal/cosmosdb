@@ -1,9 +1,7 @@
 package com.kv.nosql.cosmos.mongo.api.controller;
 
 import com.kv.nosql.cosmos.mongo.api.dao.ProductsRepository;
-import com.kv.nosql.cosmos.mongo.api.dao.UserRepository;
 import com.kv.nosql.cosmos.mongo.api.model.ProductsDO;
-import com.kv.nosql.cosmos.mongo.api.model.UserDO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +25,9 @@ public class ProductsController {
 
     @PostMapping(value = "/addProducts")
     public Mono<List<String>> create(@RequestBody List<ProductsDO> products) {
-        products.stream().forEach(i -> System.out.println(i));
-        log.info("Total Count : %s", products.size());
-        return repository.saveAll(products).map(i -> i.getId()).collectList();
+        products.forEach(System.out::println);
+        log.info("Total Count : {}", products.size());
+        return repository.saveAll(products).map(ProductsDO::getId).collectList();
     }
 
     @GetMapping("/{id}")
@@ -42,7 +40,7 @@ public class ProductsController {
         return repository.findById(id)
                 .map(o -> product)
                 .flatMap(repository::save)
-                .map(t -> t.getId());
+                .map(ProductsDO::getId);
     }
 
     @DeleteMapping("/deleteAll")

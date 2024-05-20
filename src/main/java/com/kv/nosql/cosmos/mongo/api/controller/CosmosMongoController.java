@@ -1,6 +1,5 @@
 package com.kv.nosql.cosmos.mongo.api.controller;
 
-import com.kv.nosql.cosmos.mongo.api.dao.ProductsRepository;
 import com.kv.nosql.cosmos.mongo.api.dao.UserRepository;
 import com.kv.nosql.cosmos.mongo.api.model.UserDO;
 import lombok.AllArgsConstructor;
@@ -27,9 +26,9 @@ public class CosmosMongoController {
 
     @PostMapping(value = "/addUsers")
     public Mono<List<String>> create(@RequestBody List<UserDO> userDO) {
-        userDO.stream().forEach(i -> System.out.println(i));
-        log.info("Total Count : %s", userDO.size());
-        return repository.saveAll(userDO).map(i -> i.getId()).collectList();
+        userDO.forEach(System.out::println);
+        log.info("Total Count : {}", userDO.size());
+        return repository.saveAll(userDO).map(UserDO::getId).collectList();
     }
 
     @GetMapping("/{id}")
@@ -42,7 +41,7 @@ public class CosmosMongoController {
         return repository.findById(id)
                 .map(o -> user)
                 .flatMap(repository::save)
-                .map(t -> t.getId());
+                .map(UserDO::getId);
     }
 
     @DeleteMapping("/deleteAll")
