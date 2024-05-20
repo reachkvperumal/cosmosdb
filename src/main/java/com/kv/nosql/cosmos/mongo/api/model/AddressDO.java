@@ -20,6 +20,4 @@ public class AddressDO {
     private String state;
     @NonNull
     private String zipcode;
-
-
 }
