@@ -2,6 +2,7 @@ package com.kv.nosql.cosmos.mongo.api.controller;
 
 import com.kv.nosql.cosmos.mongo.api.dao.ProductsRepository;
 import com.kv.nosql.cosmos.mongo.api.dao.UserRepository;
+import com.kv.nosql.cosmos.mongo.api.model.ProductsDO;
 import com.kv.nosql.cosmos.mongo.api.model.UserDO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,34 +14,33 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/product")
 @AllArgsConstructor
-public class CosmosMongoController {
-
-    private final UserRepository repository;
+public class ProductsController {
+    private final ProductsRepository repository;
 
 
     @GetMapping(value = "/all")
-    Flux<UserDO> getAllUsers() {
+    Flux<ProductsDO> getAllUsers() {
         return repository.findAll();
     }
 
-    @PostMapping(value = "/addUsers")
-    public Mono<List<String>> create(@RequestBody List<UserDO> userDO) {
-        userDO.stream().forEach(i -> System.out.println(i));
-        log.info("Total Count : %s", userDO.size());
-        return repository.saveAll(userDO).map(i -> i.getId()).collectList();
+    @PostMapping(value = "/addProducts")
+    public Mono<List<String>> create(@RequestBody List<ProductsDO> products) {
+        products.stream().forEach(i -> System.out.println(i));
+        log.info("Total Count : %s", products.size());
+        return repository.saveAll(products).map(i -> i.getId()).collectList();
     }
 
     @GetMapping("/{id}")
-    public Mono<UserDO> getUserById(@PathVariable("id") String id) {
+    public Mono<ProductsDO> getProductById(@PathVariable("id") String id) {
         return repository.findById(id);
     }
 
     @PatchMapping("/update/{id}")
-    public Mono<String> updateUserById(@PathVariable String id, @RequestBody UserDO user) {
+    public Mono<String> updateUserById(@PathVariable String id, @RequestBody ProductsDO product) {
         return repository.findById(id)
-                .map(o -> user)
+                .map(o -> product)
                 .flatMap(repository::save)
                 .map(t -> t.getId());
     }
@@ -54,5 +54,4 @@ public class CosmosMongoController {
     public Mono<Void> deleteById(@PathVariable("id") String id) {
         return repository.deleteById(id);
     }
-
 }
